@@ -17,7 +17,7 @@
    (or run `infra/postgres/init.sql`)
 3. `copy .env.example .env` and set `DATABASE_URL` + `POSTGRES_PASSWORD` (dev-only values).
 4. `npm install`
-5. `npm run dev:api` → `GET http://localhost:3001/health` → `{"status":"ok",...}`.
+5. `npm run dev:api` (the API loads the repository-root `.env` automatically; variables already present in the environment are never overridden) → `GET http://localhost:3001/health` → `{"status":"ok",...}`.
 
 ## Path B — Docker PostgreSQL (API still on host)
 
@@ -53,6 +53,7 @@ Validated env keys (see `packages/config/src/env.ts`): `DATABASE_URL` (required,
 - `.env` never committed (see `.gitignore`); only `.env.example` files with placeholders.
 - Env validated with Zod at boot; app exits non-zero on invalid config.
 - CORS disabled by default; containers non-root in prod Dockerfiles (added with app images later).
+- `npm audit` remains enabled at `--audit-level=high` and stays blocking. Findings that cannot be fixed without breaking framework majors are recorded as explicit advisory-specific exceptions in `infra/security/audit-exceptions.json` (package + advisory ID, reason, review date, remediation task) and enforced by `infra/security/check-audit.js`. Any NEW high/critical advisory, any stale entry, or any malformed exception fails CI. Exceptions are temporary risk acceptance; framework upgrades (NestJS 10 → 12, Next.js 14 → 16) are the planned remediation.
 - No TASK-02 code (auth/tenancy/RBAC/orders/...) in this task.
 
 ## Architecture boundaries for TASK-01
@@ -63,4 +64,4 @@ Explicitly excluded (TASK-02+): auth, users, companies, memberships, roles/RBAC/
 
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`): install → compose config validate → lint → format → typecheck → prisma validate → test → build → `/health`+`/ready` smoke → `npm audit`.
+GitHub Actions (`.github/workflows/ci.yml`): install → compose config validate → lint → format → typecheck → prisma validate → test → build → `/health`+`/ready` smoke → security gate (`npm audit --json` + strict exception check + report artifact).

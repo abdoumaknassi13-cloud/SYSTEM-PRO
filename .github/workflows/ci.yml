@@ -53,5 +53,17 @@ jobs:
           curl -fsS http://localhost:3001/health
           curl -fsS http://localhost:3001/ready
           kill "$(cat api.pid)" || true
-      - name: npm audit (high+)
-        run: npm audit --audit-level=high
+      - name: Security gate (npm audit + documented exceptions)
+        # npm audit exits non-zero when findings exist, so capture the JSON
+        # first and let the strict comparator decide pass/fail. Blocking step:
+        # no continue-on-error, no lowered threshold.
+        run: |
+          npm audit --audit-level=high --json > audit-report.json || true
+          node infra/security/check-audit.mjs audit-report.json
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: audit-report.json
+          if-no-files-found: error

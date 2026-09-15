@@ -1,0 +1,166 @@
+{
+  "exceptions": [
+    {
+      "package": "multer",
+      "advisoryId": "GHSA-xf7r-hgr6-v32p",
+      "affectedRange": "<2.1.0",
+      "fixedIn": ">=2.1.0",
+      "reason": "Transitive via @nestjs/platform-express. Verified multer is not loaded at API boot and TASK-01 exposes zero multipart/file-upload routes (GET /health, GET /ready only); crafted-upload DoS is unreachable.",
+      "reviewDate": "2026-12-15",
+      "remediationTask": "TASK-23 framework major upgrades (NestJS 10 -> 12)"
+    },
+    {
+      "package": "multer",
+      "advisoryId": "GHSA-v52c-386h-88mc",
+      "affectedRange": "<2.1.0",
+      "fixedIn": ">=2.1.0",
+      "reason": "Transitive via @nestjs/platform-express. Verified multer is not loaded at API boot and TASK-01 exposes zero multipart/file-upload routes (GET /health, GET /ready only); crafted-upload DoS is unreachable.",
+      "reviewDate": "2026-12-15",
+      "remediationTask": "TASK-23 framework major upgrades (NestJS 10 -> 12)"
+    },
+    {
+      "package": "multer",
+      "advisoryId": "GHSA-5528-5vmv-3xc2",
+      "affectedRange": "<2.1.1",
+      "fixedIn": ">=2.1.1",
+      "reason": "Transitive via @nestjs/platform-express. Verified multer is not loaded at API boot and TASK-01 exposes zero multipart/file-upload routes (GET /health, GET /ready only); crafted-upload DoS is unreachable.",
+      "reviewDate": "2026-12-15",
+      "remediationTask": "TASK-23 framework major upgrades (NestJS 10 -> 12)"
+    },
+    {
+      "package": "multer",
+      "advisoryId": "GHSA-72gw-mp4g-v24j",
+      "affectedRange": ">=1.0.0 <2.2.0",
+      "fixedIn": ">=2.2.0",
+      "reason": "Transitive via @nestjs/platform-express. Verified multer is not loaded at API boot and TASK-01 exposes zero multipart/file-upload routes (GET /health, GET /ready only); crafted-upload DoS is unreachable.",
+      "reviewDate": "2026-12-15",
+      "remediationTask": "TASK-23 framework major upgrades (NestJS 10 -> 12)"
+    },
+    {
+      "package": "multer",
+      "advisoryId": "GHSA-wc9g-mqfw-jrwm",
+      "affectedRange": "<2.3.0",
+      "fixedIn": ">=2.3.0",
+      "reason": "Transitive via @nestjs/platform-express. Verified multer is not loaded at API boot and TASK-01 exposes zero multipart/file-upload routes (GET /health, GET /ready only); crafted-upload DoS is unreachable.",
+      "reviewDate": "2026-12-15",
+      "remediationTask": "TASK-23 framework major upgrades (NestJS 10 -> 12)"
+    },
+    {
+      "package": "multer",
+      "advisoryId": "GHSA-535w-7cp7-47q4",
+      "affectedRange": "<2.3.0",
+      "fixedIn": ">=2.3.0",
+      "reason": "Transitive via @nestjs/platform-express. Verified multer is not loaded at API boot and TASK-01 exposes zero multipart/file-upload routes (GET /health, GET /ready only); crafted-upload DoS is unreachable.",
+      "reviewDate": "2026-12-15",
+      "remediationTask": "TASK-23 framework major upgrades (NestJS 10 -> 12)"
+    },
+    {
+      "package": "next",
+      "advisoryId": "GHSA-h25m-26qc-wcjf",
+      "affectedRange": ">=13.0.0 <15.0.8",
+      "fixedIn": "Next.js 15.0.8 / 16.x",
+      "reason": "TASK-01 web is a static placeholder page only; no React Server Components, images, actions, middleware, rewrites, or i18n are used, so this RSC-deserialization DoS has no reachable trigger.",
+      "reviewDate": "2026-11-01",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "next",
+      "advisoryId": "GHSA-q4gf-8mx6-v5v3",
+      "affectedRange": ">=13.0.0 <15.5.15",
+      "fixedIn": "Next.js 15.5.15 / 16.x",
+      "reason": "TASK-01 web is a static placeholder page only; no React Server Components, images, actions, middleware, rewrites, or i18n are used, so this RSC DoS has no reachable trigger.",
+      "reviewDate": "2026-11-01",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "next",
+      "advisoryId": "GHSA-8h8q-6873-q5fj",
+      "affectedRange": ">=13.0.0 <15.5.16",
+      "fixedIn": "Next.js 15.5.16 / 16.x",
+      "reason": "TASK-01 web is a static placeholder page only; no React Server Components, images, actions, middleware, rewrites, or i18n are used, so this RSC DoS has no reachable trigger.",
+      "reviewDate": "2026-11-01",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "next",
+      "advisoryId": "GHSA-c4j6-fc7j-m34r",
+      "affectedRange": ">=13.4.13 <15.5.16",
+      "fixedIn": "Next.js 15.5.16 / 16.x",
+      "reason": "TASK-01 web is a static placeholder page only; no WebSocket upgrades, Server Actions, middleware, rewrites, or i18n are used, so this SSRF has no reachable trigger.",
+      "reviewDate": "2026-11-01",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "next",
+      "advisoryId": "GHSA-36qx-fr4f-26g5",
+      "affectedRange": ">=12.2.0 <15.5.16",
+      "fixedIn": "Next.js 15.5.16 / 16.x",
+      "reason": "TASK-01 web is a static placeholder page only; no Pages Router, i18n, middleware, or proxy is used, so this bypass has no reachable trigger.",
+      "reviewDate": "2026-11-01",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "next",
+      "advisoryId": "GHSA-m99w-x7hq-7vfj",
+      "affectedRange": ">=13.0.0 <15.5.21",
+      "fixedIn": "Next.js 15.5.21 / 16.x",
+      "reason": "TASK-01 web is a static placeholder page only; no Server Actions are used, so this DoS has no reachable trigger.",
+      "reviewDate": "2026-11-01",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "next",
+      "advisoryId": "GHSA-89xv-2m56-2m9x",
+      "affectedRange": ">=14.1.1 <15.5.21",
+      "fixedIn": "Next.js 15.5.21 / 16.x",
+      "reason": "TASK-01 web is a static placeholder page only; no Server Actions are used, so this SSRF has no reachable trigger.",
+      "reviewDate": "2026-11-01",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "next",
+      "advisoryId": "GHSA-p9j2-gv94-2wf4",
+      "affectedRange": ">=12.0.0 <15.5.21",
+      "fixedIn": "Next.js 15.5.21 / 16.x",
+      "reason": "TASK-01 web is a static placeholder page only; no rewrites with attacker-controlled destinations are configured, so this SSRF has no reachable trigger.",
+      "reviewDate": "2026-11-01",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "next",
+      "advisoryId": "GHSA-p293-qw3h-jr36",
+      "affectedRange": ">=13.4.0 <15.5.24",
+      "fixedIn": "Next.js 15.5.24 / 16.x",
+      "reason": "TASK-01 web is a static placeholder page only; no Image Optimization, AVIF handling, Server Actions, middleware, or untrusted server-function inputs are used, so this RCE has no reachable trigger in TASK-01.",
+      "reviewDate": "2026-11-01",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "next",
+      "advisoryId": "GHSA-2xp9-vwfh-vxw4",
+      "affectedRange": ">=10.0.0 <15.5.24",
+      "fixedIn": "Next.js 15.5.24 / 16.x",
+      "reason": "TASK-01 web is a static placeholder page only; next/image and AVIF optimization are not used anywhere, so this RCE has no reachable trigger in TASK-01.",
+      "reviewDate": "2026-11-01",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "postcss",
+      "advisoryId": "GHSA-6g55-p6wh-862q",
+      "affectedRange": "<=8.5.11",
+      "fixedIn": ">8.5.11",
+      "reason": "Build-time only via next build CSS pipeline; the repository contains zero CSS files (inline styles only), so attacker-controlled sourceMappingURL input cannot occur.",
+      "reviewDate": "2026-12-15",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    },
+    {
+      "package": "postcss",
+      "advisoryId": "GHSA-r28c-9q8g-f849",
+      "affectedRange": "<=8.5.17",
+      "fixedIn": ">8.5.17",
+      "reason": "Build-time only via next build CSS pipeline; the repository contains zero CSS files (inline styles only), so attacker-controlled sourceMappingURL input cannot occur.",
+      "reviewDate": "2026-12-15",
+      "remediationTask": "TASK-23 framework major upgrades (Next.js 14 -> 16)"
+    }
+  ]
+}
