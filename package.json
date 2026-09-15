@@ -15,7 +15,7 @@
   "scripts": {
     "dev:api": "npm run dev --workspace=apps/api",
     "dev:web": "npm run dev --workspace=apps/web",
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build --workspace=packages/config --workspace=packages/contracts --workspace=packages/ui && npm run build --workspace=apps/api --workspace=apps/web",
     "lint": "eslint . --max-warnings=0",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
