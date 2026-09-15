@@ -1,0 +1,11 @@
+// TASK-01 Prisma foundation: connection only, NO application/domain tables.
+// Domain models (companies, users, orders, ...) arrive with their tasks (TASK-02+).
+// This file exists so `prisma validate` + future migrations have a stable home.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

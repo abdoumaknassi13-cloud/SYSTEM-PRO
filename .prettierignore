@@ -1,0 +1,16 @@
+node_modules
+dist
+.next
+coverage
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+!.env.docker.example
+*.pem
+*.key
+data/
+pgdata/
+*.log
+.DS_Store
+Thumbs.db

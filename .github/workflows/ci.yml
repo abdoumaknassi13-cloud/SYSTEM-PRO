@@ -1,0 +1,57 @@
+name: ci
+
+on:
+  push:
+    branches: [main, "task/*"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: systempro_dev
+          POSTGRES_USER: systempro
+          POSTGRES_PASSWORD: ci_dev_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U systempro -d systempro_dev"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=10
+    env:
+      DATABASE_URL: postgresql://systempro:ci_dev_only@localhost:5432/systempro_dev
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - name: Validate Docker Compose (no containers started)
+        run: POSTGRES_PASSWORD=ci_dev_only docker compose -f infra/docker-compose.yml config
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run prisma:validate --workspace=apps/api
+      - run: npm run test --if-present
+      - run: npm run build --if-present
+      - name: Smoke /health (no DB required)
+        run: |
+          npm run build --workspace=apps/api
+          (DATABASE_URL="$DATABASE_URL" API_PORT=3001 node apps/api/dist/main.js & echo $! > api.pid)
+          for i in $(seq 1 30); do
+            curl -fsS http://localhost:3001/health && break
+            sleep 1
+          done
+          curl -fsS http://localhost:3001/health
+          curl -fsS http://localhost:3001/ready
+          kill "$(cat api.pid)" || true
+      - name: npm audit (high+)
+        run: npm audit --audit-level=high
