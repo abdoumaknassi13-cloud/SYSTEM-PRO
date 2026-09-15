@@ -17,7 +17,7 @@
    (or run `infra/postgres/init.sql`)
 3. `copy .env.example .env` and set `DATABASE_URL` + `POSTGRES_PASSWORD` (dev-only values).
 4. `npm install`
-5. `npm run dev:api` → `GET http://localhost:3001/health` → `{"status":"ok",...}`.
+5. `npm run dev:api` (the API loads the repository-root `.env` automatically; variables already present in the environment are never overridden) → `GET http://localhost:3001/health` → `{"status":"ok",...}`.
 
 ## Path B — Docker PostgreSQL (API still on host)
 
