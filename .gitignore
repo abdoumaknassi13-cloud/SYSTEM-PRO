@@ -22,6 +22,8 @@ pgdata/
 # Logs
 *.log
 npm-debug.log*
+# CI-generated audit snapshot (recreated every run, never committed)
+audit-report.json
 # OS
 .DS_Store
 Thumbs.db
