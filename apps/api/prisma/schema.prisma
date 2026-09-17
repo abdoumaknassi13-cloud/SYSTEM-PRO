@@ -1,6 +1,24 @@
-// TASK-01 Prisma foundation: connection only, NO application/domain tables.
-// Domain models (companies, users, orders, ...) arrive with their tasks (TASK-02+).
-// This file exists so `prisma validate` + future migrations have a stable home.
+// SYSTEM PRO identity + multi-tenant foundation (TASK-02 Subtask 1).
+//
+// Shape: User -> Membership -> Company. A User is NEVER coupled directly to
+// one Company; multi-company access flows only through Membership rows.
+// PlatformSuperAdmin is a SEPARATE table referencing User: company roles can
+// never grant platform access by construction (no promotion path exists).
+// Server-side opaque sessions: only SHA-256 token hashes are stored; raw
+// tokens are never persisted. Tenant scope (membershipId) is set server-side
+// only; the client can never choose or modify it (enforced later in services).
+//
+// SECURITY INVARIANTS ENFORCED HERE (DB level):
+// - citext unique email: one identity per email, case-insensitively.
+// - @@unique([userId, companyId]): one membership per user x company.
+// - userId unique on PlatformSuperAdmin: at most one platform grant per user.
+// - tokenHash unique: one session per token; no duplicates.
+// - passwordHash required, no default: a User row cannot exist without one.
+// - Membership.userId / companyId required: no dangling memberships.
+// - Enums restrict status/role to known values only.
+// - RLS intentionally DEFERRED to TASK-23; isolation is app-layer + constraints
+//   until then. No RLS policies in this migration.
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +26,110 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum CompanyStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum CompanyRole {
+  COMPANY_SUPER_ADMIN
+  ADMIN
+  MANAGER
+  EMPLOYEE
+}
+
+model User {
+  id              String       @id @default(uuid()) @db.Uuid
+  // Stored normalized (trimmed + lowercased) by the service layer; citext
+  // additionally guarantees case-insensitive uniqueness at the database.
+  email           String       @unique @db.Citext
+  // Argon2id PHC string. Required with NO default: a user row is invalid
+  // without a hash. NEVER selected into API responses (service rule).
+  passwordHash    String
+  status          UserStatus   @default(ACTIVE)
+  emailVerifiedAt DateTime?    @db.Timestamptz
+  createdAt       DateTime     @default(now()) @db.Timestamptz
+  updatedAt       DateTime     @updatedAt @db.Timestamptz
+
+  memberships     Membership[]
+  platformGrant   PlatformSuperAdmin?
+  sessions        Session[]
+}
+
+model Company {
+  id        String        @id @default(uuid()) @db.Uuid
+  name      String
+  status    CompanyStatus @default(ACTIVE)
+  createdAt DateTime      @default(now()) @db.Timestamptz
+  updatedAt DateTime      @updatedAt @db.Timestamptz
+
+  memberships Membership[]
+}
+
+model Membership {
+  id        String      @id @default(uuid()) @db.Uuid
+  userId    String      @db.Uuid
+  companyId String      @db.Uuid
+  // No default: the service must assign a role explicitly. A forgotten role
+  // must fail loudly, never silently become a privilege.
+  role      CompanyRole
+  createdAt DateTime    @default(now()) @db.Timestamptz
+  updatedAt DateTime    @updatedAt @db.Timestamptz
+
+  // User deletion removes its memberships (no orphaned access rows).
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Company deletion is blocked while memberships exist: history and access
+  // rows must be handled by an explicit future flow, never vanish silently.
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  // Back-relation for Session.membershipId (membership-scoped revocation).
+  sessions Session[]
+
+  @@unique([userId, companyId])
+  // companyId-only member listings (role checks, admin views).
+  @@index([companyId])
+}
+
+model PlatformSuperAdmin {
+  id        String   @id @default(uuid()) @db.Uuid
+  // Unique: a user holds at most one platform grant, ever.
+  userId    String   @unique @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String    @id @default(uuid()) @db.Uuid
+  // SHA-256 hex of the opaque token. Unique: token reuse across rows is
+  // impossible. Raw tokens are NEVER stored (service rule).
+  tokenHash String    @unique @db.Char(64)
+  userId    String    @db.Uuid
+  // Company session -> set (server-side only). Platform session -> null.
+  // Nullable by design; the service layer assigns it, never the client.
+  membershipId String? @db.Uuid
+  createdAt    DateTime  @default(now()) @db.Timestamptz
+  lastSeenAt   DateTime  @default(now()) @db.Timestamptz
+  // Absolute expiry, set explicitly by the service (no silent default).
+  expiresAt    DateTime  @db.Timestamptz
+  revokedAt    DateTime? @db.Timestamptz
+
+  // Cascades keep revocation airtight: deleting a user or membership destroys
+  // its sessions instead of leaving orphaned access rows behind.
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  membership Membership? @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  // logout-all / user session listing.
+  @@index([userId])
+  // membership-scoped revocation (e.g. membership suspend kills its sessions).
+  @@index([membershipId])
+  // expired-session sweeper.
+  @@index([expiresAt])
 }
